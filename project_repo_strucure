@@ -1,0 +1,122 @@
+ai-observability-minikube/
+│
+├── README.md                          # Main documentation
+├── QUICK_START.md                     # Quick start guide
+├── TROUBLESHOOTING.md                
+│
+├── docker/                           
+│   ├── ai-service/
+│   │   ├── Dockerfile
+│   │   ├── requirements.txt
+│   │   ├── app.py
+│   │   ├── ai_engine.py
+│   │   └── prometheus_metrics.py
+│   │
+│   └── mock-services/
+│       ├── Dockerfile
+│       └── app.py
+│
+├── kubernetes/                      
+│   ├── 01-namespaces.yaml
+│   ├── 02-rbac.yaml
+│   ├── 03-mock-services.yaml
+│   ├── 04-service-monitors.yaml
+│   │
+│   ├── ai-service/
+│   │   ├── deployment.yaml
+│   │   ├── service.yaml
+│   │   └── configmap.yaml
+│   │
+│   └── prometheus/
+│       ├── configmap.yaml
+│       ├── alert-rules.yaml
+│       └── recording-rules.yaml
+│
+├── helm/                             
+│   ├── prometheus-values.yaml
+│   └── grafana-values.yaml
+│
+├── grafana/                         
+│   └── dashboards/
+│       ├── ai-anomalies-dashboard.json
+│       └── services-metrics-dashboard.json
+│
+├── scripts/                           # Automation scripts
+│   ├── setup.sh
+│   ├── deploy.sh
+│   ├── cleanup.sh
+│   ├── test.sh
+│   ├── verify.sh
+│   └── logs.sh
+│
+└── config/                          
+    ├── alertmanager.yml
+    └── grafana-datasources.yaml
+
+
+# Commands Notes:
+# Useing minikube
+
+   17  docker build -t ai-service:latest ./docker/ai-service
+   18  docker build -t mock-service:latest ./docker/mock-service
+   19  minikube image load ai-service:latest
+   20  minikube image load mock-service:latest
+   21  kubectl delete pod -l app=ai-service -n accelerator-ops
+   22  kubectl delete pod -l app=mock-traffic -n accelerator-ops
+   23  kubectl apply -f kubernetes/namespaces.yaml
+   24  kubectl apply -f kubernetes/ai-service/
+   25  kubectl apply -f kubernetes/mock-services.yaml
+   26  kubectl get pods -n accelerator-ops
+   27  docker pull registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.10.1
+   28  docker pull quay.io/prometheus/node-exporter:v1.7.0
+   29  docker pull prom/pushgateway:v1.6.0
+   30  docker pull quay.io/prometheus/prometheus:v2.48.1
+   31  minikube image load registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.10.1
+   32  minikube image load quay.io/prometheus/node-exporter:v1.7.0
+   33  minikube image load prom/pushgateway:v1.6.0
+   34  minikube image load quay.io/prometheus/prometheus:v2.48.1
+   35  kubectl get pods -n accelerator-ops
+   36  kubectl describe pod prometheus-server-5fcfcdf7-f2h92 -n accelerator-ops
+   37  docker pull quay.io/prometheus/prometheus:v3.8.0
+   38  docker pull quay.io/prometheus-operator/prometheus-config-reloader:v0.87.0
+   39  minikube image load quay.io/prometheus/prometheus:v3.8.0
+   40  minikube image load quay.io/prometheus-operator/prometheus-config-reloader:v0.87.0
+   41  kubectl delete pod prometheus-server-5fcfcdf7-f2h92 -n accelerator-ops
+   42  kubectl get pods -n accelerator-ops
+   43  kubectl get pods -n accelerator-ops
+   44  kubectl get pods -n accelerator-ops -o jsonpath="{.items[*].spec.containers[*].image}"
+   45  kubectl get pods -n accelerator-ops -o jsonpath="{.items[*].spec.containers[*].image}"
+   46  docker pull registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.17.0
+   47  docker pull quay.io/prometheus/node-exporter:v1.10.2
+   48  docker pull quay.io/prometheus/pushgateway:v1.11.2
+   49  minikube image load registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.17.0
+   50  minikube image load quay.io/prometheus/node-exporter:v1.10.2
+   51  minikube image load quay.io/prometheus/pushgateway:v1.11.2
+   52  # Restart exporter pods to pick up the new images
+   53  kubectl delete pod -l app.kubernetes.io/name=kube-state-metrics -n accelerator-ops
+   54  kubectl delete pod -l app.kubernetes.io/name=prometheus-node-exporter -n accelerator-ops
+   55  kubectl delete pod -l app.kubernetes.io/name=prometheus-pushgateway -n accelerator-ops
+   56  kubectl get pods
+   57  kubectl get pods -n accelerator-op
+   58* kubectl
+   59  kubectl dscribe pod prometheus-server-5fcfcdf7-75q2q -n accelerator-ops
+   60  kubectl describe pod prometheus-server-5fcfcdf7-75q2q -n accelerator-ops
+   61  kubectl logs prometheus-server-5fcfcdf7-75q2q -n accelerator-ops -c prometheus-server --previous  
+   62  kubectl edit configmap prometheus-server -n accelerator-ops
+   63  kubectl delete pod prometheus-server-5fcfcdf7-75q2q -n accelerator-ops
+   64  kubectl get pods -n accelerator-ops
+   65  kubectl get pods -n accelerator-ops
+   66  minikube service grafana -n accelerator-ops --url
+   67  history
+# Used bash
+   21  cd "./OneDrive - EY/Desktop/Accelerator"
+   22  mkdir kubernetes
+   23  cd ./kubernetes/
+   24  mkdir ai-service && mkdir prometheus
+   25  touch namespaces.yaml && touch rbac.yaml && touch mock-services.yaml && touch service-monitors.yaml
+   51  chmod +x scripts/*.sh
+   52  ./scripts/setup.sh
+   54  ./scripts/deploy.sh
+   55  ./scripts/test.sh
+   56  history
+

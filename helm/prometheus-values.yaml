@@ -1,0 +1,7 @@
+server:
+  global:
+    scrape_interval: 5s
+alertmanager:
+  enabled: false
+pushgateway:
+  enabled: false

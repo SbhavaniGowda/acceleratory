@@ -1,0 +1,28 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: ai-service-alerts
+  namespace: accelerator-ops
+  labels:
+    release: prometheus
+spec:
+  groups:
+  - name: ai.rules
+    rules:
+    - alert: HighGPUTemperature
+      expr: ai_accelerator_temperature_celsius > 90
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        summary: "GPU Overheating (Instance {{ $labels.instance }})"
+        description: "GPU temperature is above 90C for more than 1 minute."
+
+    - alert: HighAnomalyRate
+      expr: rate(ai_anomalies_detected_total[1m]) > 5
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High Anomaly Rate Detected"
+        description: "AI model is detecting > 5 anomalies per second."

@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: ai-recording-rules
+  namespace: accelerator-ops
+  labels:
+    release: prometheus
+spec:
+  groups:
+  - name: ai.recording
+    rules:
+    - record: job:ai_request_rate:1m
+      expr: sum(rate(ai_prediction_requests_total[1m])) by (job)
+    
+    - record: job:ai_anomaly_ratio:5m
+      expr: sum(rate(ai_anomalies_detected_total[5m])) / sum(rate(ai_prediction_requests_total[5m]))

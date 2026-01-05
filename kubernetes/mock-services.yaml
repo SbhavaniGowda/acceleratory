@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mock-traffic
+  namespace: accelerator-ops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mock-traffic
+  template:
+    metadata:
+      labels:
+        app: mock-traffic
+    spec:
+      containers:
+      - name: mock
+        image: curlimages/curl:latest
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/sh"]
+        args:
+          - -c
+          - |
+            while true; do
+              # Generate random numbers for GPU (0-100) and Temp (0-100)
+              GPU=$(shuf -i 20-100 -n 1)
+              TEMP=$(shuf -i 40-100 -n 1)
+              
+              # Post to AI Service
+              curl -s -X POST http://ai-service:5000/predict \
+                -H "Content-Type: application/json" \
+                -d "{\"gpu_util\": $GPU, \"temp\": $TEMP}" > /dev/null
+              
+              echo "Simulated Request: GPU=$GPU, Temp=$TEMP"
+              sleep 2
+            done

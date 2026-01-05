@@ -1,0 +1,52 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "Real-time Anomalies by Root Cause",
+      "type": "timeseries",
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "rate(ai_anomalies_detected_total[1m])",
+          "legendFormat": "{{root_cause}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+        }
+      }
+    },
+    {
+      "title": "GPU Utilization vs Temperature",
+      "type": "timeseries",
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        { "expr": "ai_accelerator_gpu_utilization", "legendFormat": "GPU Util %", "refId": "A" },
+        { "expr": "ai_accelerator_temperature_celsius", "legendFormat": "Temp (C)", "refId": "B" }
+      ]
+    },
+    {
+      "title": "Inference Latency (Heatmap)",
+      "type": "heatmap",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 9 },
+      "targets": [
+        { "expr": "rate(ai_inference_processing_seconds_bucket[1m])", "format": "heatmap", "refId": "A" }
+      ]
+    }
+  ],
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["ai", "observability"],
+  "templating": { "list": [] },
+  "time": { "from": "now-15m", "to": "now" },
+  "title": "AI Accelerator Observability",
+  "uid": "ai-obs-001",
+  "version": 1
+}
