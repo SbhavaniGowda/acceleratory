@@ -22,15 +22,15 @@ spec:
           - -c
           - |
             while true; do
-              # Generate random numbers for GPU (0-100) and Temp (0-100)
+              # Generate random numbers for GPU (20-100) and Temp (40-100)
               GPU=$(shuf -i 20-100 -n 1)
               TEMP=$(shuf -i 40-100 -n 1)
-              
+
               # Post to AI Service
               curl -s -X POST http://ai-service:5000/predict \
                 -H "Content-Type: application/json" \
                 -d "{\"gpu_util\": $GPU, \"temp\": $TEMP}" > /dev/null
-              
+
               echo "Simulated Request: GPU=$GPU, Temp=$TEMP"
               sleep 2
             done

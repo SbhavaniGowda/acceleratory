@@ -1,6 +1,9 @@
+
 server:
   global:
-    scrape_interval: 5s
+    scrape_interval: 15s
+    scrape_timeout: 10s
+
 alertmanager:
   enabled: false
 pushgateway:
