@@ -1,15 +1,23 @@
 {
-  "annotations": { "list": [] },
+  "uid": "ai-obs-001",
+  "title": "AI Accelerator Observability",
+  "schemaVersion": 38,
+  "version": 2,
   "editable": true,
-  "gnetId": null,
-  "graphTooltip": 0,
-  "id": null,
-  "links": [],
+  "style": "dark",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "tags": ["ai", "observability", "sre"],
   "panels": [
     {
-      "title": "Real-time Anomalies by Root Cause",
+      "id": 1,
       "type": "timeseries",
+      "title": "Real-time Anomalies by Root Cause",
+      "description": "Rate of detected anomalies grouped by root cause emitted by the AI service.",
       "gridPos": { "h": 9, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "PROMETHEUS_DS" },
       "targets": [
         {
           "expr": "rate(ai_anomalies_detected_total[1m])",
@@ -17,36 +25,108 @@
           "refId": "A"
         }
       ],
+      "options": {
+        "tooltip": {
+          "mode": "all",
+          "sort": "desc"
+        }
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 }
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 10
+          },
+          "links": [
+            {
+              "title": "View related logs",
+              "url": "/explore?orgId=1&left={\"datasource\":\"Loki\",\"queries\":[{\"expr\":\"{app=\\\"ai-service\\\"} |= \\\"{{__field.name}}\\\"\"}],\"range\":{\"from\":\"now-15m\",\"to\":\"now\"}}",
+              "targetBlank": true
+            }
+          ]
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byRegexp", "options": ".*" },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Root Cause: {{__field.name}}"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "GPU Utilization vs Temperature",
+      "description": "Correlation between GPU load and temperature to identify saturation or overheating.",
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "PROMETHEUS_DS" },
+      "targets": [
+        {
+          "expr": "ai_accelerator_gpu_utilization",
+          "legendFormat": "GPU Utilization (%)",
+          "refId": "A"
+        },
+        {
+          "expr": "ai_accelerator_temperature_celsius",
+          "legendFormat": "GPU Temperature (°C)",
+          "refId": "B"
+        }
+      ],
+      "options": {
+        "tooltip": {
+          "mode": "all"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "links": [
+            {
+              "title": "View GPU logs",
+              "url": "/explore?orgId=1&left={\"datasource\":\"Loki\",\"queries\":[{\"expr\":\"{app=\\\"ai-service\\\"} |= \\\"gpu\\\"\"}],\"range\":{\"from\":\"now-15m\",\"to\":\"now\"}}",
+              "targetBlank": true
+            }
+          ]
         }
       }
     },
     {
-      "title": "GPU Utilization vs Temperature",
-      "type": "timeseries",
-      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 0 },
-      "targets": [
-        { "expr": "ai_accelerator_gpu_utilization", "legendFormat": "GPU Util %", "refId": "A" },
-        { "expr": "ai_accelerator_temperature_celsius", "legendFormat": "Temp (C)", "refId": "B" }
-      ]
-    },
-    {
-      "title": "Inference Latency (Heatmap)",
+      "id": 3,
       "type": "heatmap",
+      "title": "Inference Latency Distribution (Heatmap)",
+      "description": "Latency distribution across inference requests. Darker areas indicate higher request volume.",
       "gridPos": { "h": 8, "w": 24, "x": 0, "y": 9 },
+      "datasource": { "type": "prometheus", "uid": "PROMETHEUS_DS" },
       "targets": [
-        { "expr": "rate(ai_inference_processing_seconds_bucket[1m])", "format": "heatmap", "refId": "A" }
-      ]
+        {
+          "expr": "rate(ai_inference_processing_seconds_bucket[1m])",
+          "format": "heatmap",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "links": [
+            {
+              "title": "Inspect slow inference logs",
+              "url": "/explore?orgId=1&left={\"datasource\":\"Loki\",\"queries\":[{\"expr\":\"{app=\\\"ai-service\\\"} |= \\\"latency\\\"\"}],\"range\":{\"from\":\"now-15m\",\"to\":\"now\"}}",
+              "targetBlank": true
+            }
+          ]
+        }
+      }
     }
   ],
-  "schemaVersion": 38,
-  "style": "dark",
-  "tags": ["ai", "observability"],
   "templating": { "list": [] },
-  "time": { "from": "now-15m", "to": "now" },
-  "title": "AI Accelerator Observability",
-  "uid": "ai-obs-001",
-  "version": 1
+  "annotations": { "list": [] }
 }
