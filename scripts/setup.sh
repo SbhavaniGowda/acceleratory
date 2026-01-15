@@ -1,4 +1,4 @@
-#!/bin/bash
+
 echo ">>> Starting Minikube..."
 minikube start --driver=docker
 minikube addons enable metrics-server
